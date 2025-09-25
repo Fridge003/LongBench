@@ -12,8 +12,7 @@ import torch.multiprocessing as mp
 model_map = json.loads(open('config/model2path.json', encoding='utf-8').read())
 maxlen_map = json.loads(open('config/model2maxlen.json', encoding='utf-8').read())
 
-URL = "http://127.0.0.1:8000/v1"
-API_KEY = "token-abc123"
+DUMMY_API_KEY = "token-abc123"
 template_rag = open('prompts/0shot_rag.txt', encoding='utf-8').read()
 template_no_context = open('prompts/0shot_no_context.txt', encoding='utf-8').read()
 template_0shot = open('prompts/0shot.txt', encoding='utf-8').read()
@@ -74,8 +73,8 @@ def get_pred(data, args, fout):
     else:
         tokenizer = AutoTokenizer.from_pretrained(model_map[model], trust_remote_code=True)
     client = OpenAI(
-        base_url=URL,
-        api_key=API_KEY
+        base_url=f"http://127.0.0.1:{args.port}/v1",
+        api_key=DUMMY_API_KEY
     )
     for item in tqdm(data):
         context = item['context']
@@ -138,6 +137,9 @@ def main():
         if item["_id"] not in has_data:
             data.append(item)
 
+    if args.num_prompts > 0:
+        data = data[:args.num_prompts]
+
     data_subsets = [data[i::args.n_proc] for i in range(args.n_proc)]
     processes = []
     for rank in range(args.n_proc):
@@ -149,6 +151,8 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--port", type=int, default=30000)
+    parser.add_argument("--num_prompts", type=int, default=-1)
     parser.add_argument("--save_dir", "-s", type=str, default="results")
     parser.add_argument("--model", "-m", type=str, default="GLM-4-9B-Chat")
     parser.add_argument("--cot", "-cot", action='store_true') # set to True if using COT
