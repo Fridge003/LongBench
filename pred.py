@@ -134,18 +134,25 @@ def main():
     dataset = load_dataset('THUDM/LongBench-v2', split='train') # dataset = json.load(open('data.json', 'r', encoding='utf-8'))
     data_all = [{"_id": item["_id"], "domain": item["domain"], "sub_domain": item["sub_domain"], "difficulty": item["difficulty"], "length": item["length"], "question": item["question"], "choice_A": item["choice_A"], "choice_B": item["choice_B"], "choice_C": item["choice_C"], "choice_D": item["choice_D"], "answer": item["answer"], "context": item["context"]} for item in dataset]
 
-    # cache
-    has_data = {}
-    if os.path.exists(out_file):
-        with open(out_file, encoding='utf-8') as f:
-            has_data = {json.loads(line)["_id"]: 0 for line in f}
-    fout = open(out_file, 'a', encoding='utf-8')
+    # this is incomptible with num_prompts
+    # # cache
+    # has_data = {}
+    # if os.path.exists(out_file):
+    #     with open(out_file, encoding='utf-8') as f:
+    #         has_data = {json.loads(line)["_id"]: 0 for line in f}
+    # fout = open(out_file, 'a', encoding='utf-8')
+    # data = []
+    # for item in data_all:
+    #     if item["_id"] not in has_data:
+    #         data.append(item)
     data = []
     for item in data_all:
-        if item["_id"] not in has_data:
-            data.append(item)
+        data.append(item)
 
     if args.num_prompts > 0:
+        print(f"shuffle and pick {args.num_prompts=} items from {len(data)=} items")
+        import random
+        random.Random(42).shuffle(data)
         data = data[:args.num_prompts]
 
     data_subsets = [data[i::args.n_proc] for i in range(args.n_proc)]
