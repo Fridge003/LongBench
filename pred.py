@@ -22,7 +22,7 @@ template_0shot_cot_ans = open('prompts/0shot_cot_ans.txt', encoding='utf-8').rea
 def query_llm(prompt, model, tokenizer, client=None, temperature=0.5, max_new_tokens=128, stop=None):
     # truncate
     # max_len = maxlen_map[model]
-    max_len = 163840
+    max_len = int(os.environ["HACK_MAX_LEN"])
     print("hack max_len", max_len)
 
     # if model in model_map:
