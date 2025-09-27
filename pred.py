@@ -48,6 +48,7 @@ def query_llm(prompt, model, tokenizer, client=None, temperature=0.5, max_new_to
                 temperature=temperature,
                 max_tokens=max_new_tokens,
             )
+            print(f"query_llm {temperature=} {max_new_tokens=} {completion=}")
             return completion.choices[0].message.content
         except KeyboardInterrupt as e:
             raise e
