@@ -34,6 +34,8 @@ for file in files:
             long_acc += acc
 
     name = '.'.join(file.split('.')[:-1])
+    print(f"{(easy_acc + hard_acc) / len(pred_data)=}")
     output.append(name+'\t'+str(round(100*(easy_acc+hard_acc)/len(pred_data), 1))+'\t'+str(round(100*easy_acc/easy, 1))+'\t'+str(round(100*hard_acc/hard, 1))+'\t'+str(round(100*short_acc/short, 1))+'\t'+str(round(100*medium_acc/medium, 1))+'\t'+str(round(100*long_acc/long, 1)))
 
 open('result.txt', 'w', encoding='utf-8').write('\n'.join(output))
+print(output)
