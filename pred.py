@@ -21,8 +21,12 @@ template_0shot_cot_ans = open('prompts/0shot_cot_ans.txt', encoding='utf-8').rea
 
 def query_llm(prompt, model, tokenizer, client=None, temperature=0.5, max_new_tokens=128, stop=None):
     # truncate
-    max_len = maxlen_map[model]
-    if model in model_map:
+    # max_len = maxlen_map[model]
+    max_len = 163840
+    print("hack max_len", max_len)
+
+    # if model in model_map:
+    if True:
         input_ids = tokenizer.encode(prompt)
         if len(input_ids) > max_len:
             input_ids = input_ids[:max_len//2] + input_ids[-max_len//2:]
@@ -71,7 +75,9 @@ def get_pred(data, args, fout):
     if "gpt" in model or "o1" in model:
         tokenizer = tiktoken.encoding_for_model("gpt-4o-2024-08-06")
     else:
-        tokenizer = AutoTokenizer.from_pretrained(model_map[model], trust_remote_code=True)
+        print("hack: change AutoTokenizer loading")
+        # tokenizer = AutoTokenizer.from_pretrained(model_map[model], trust_remote_code=True)
+        tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True)
     client = OpenAI(
         base_url=f"http://127.0.0.1:{args.port}/v1",
         api_key=DUMMY_API_KEY
