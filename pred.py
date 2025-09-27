@@ -19,7 +19,7 @@ template_0shot = open('prompts/0shot.txt', encoding='utf-8').read()
 template_0shot_cot = open('prompts/0shot_cot.txt', encoding='utf-8').read()
 template_0shot_cot_ans = open('prompts/0shot_cot_ans.txt', encoding='utf-8').read()
 
-def query_llm(prompt, model, tokenizer, client=None, temperature=0.5, max_new_tokens=128, stop=None):
+def query_llm(prompt, model, tokenizer, client=None, temperature=0.5, max_new_tokens=128, stop=None, debug_info=None):
     # truncate
     # max_len = maxlen_map[model]
     max_len = int(os.environ["HACK_MAX_LEN"])
@@ -48,7 +48,7 @@ def query_llm(prompt, model, tokenizer, client=None, temperature=0.5, max_new_to
                 temperature=temperature,
                 max_tokens=max_new_tokens,
             )
-            print(f"query_llm {temperature=} {max_new_tokens=} {completion=}")
+            print(f"query_llm {debug_info=} {temperature=} {max_new_tokens=} {completion=}")
             return completion.choices[0].message.content
         except KeyboardInterrupt as e:
             raise e
@@ -99,17 +99,18 @@ def get_pred(data, args, fout):
         else:
             template = template_0shot
         prompt = template.replace('$DOC$', context.strip()).replace('$Q$', item['question'].strip()).replace('$C_A$', item['choice_A'].strip()).replace('$C_B$', item['choice_B'].strip()).replace('$C_C$', item['choice_C'].strip()).replace('$C_D$', item['choice_D'].strip())
+        debug_info = f"id={item['_id']} std_ans={item['answer']}"
         if args.cot:
-            output = query_llm(prompt, model, tokenizer, client, temperature=0.1, max_new_tokens=1024)
+            output = query_llm(prompt, model, tokenizer, client, temperature=0.1, max_new_tokens=1024, debug_info=debug_info)
         else:
-            output = query_llm(prompt, model, tokenizer, client, temperature=0.1, max_new_tokens=128)
+            output = query_llm(prompt, model, tokenizer, client, temperature=0.1, max_new_tokens=128, debug_info=debug_info)
         if output == '':
             continue
         if args.cot: # extract answer
             response = output.strip()
             item['response_cot'] = response
             prompt = template_0shot_cot_ans.replace('$DOC$', context.strip()).replace('$Q$', item['question'].strip()).replace('$C_A$', item['choice_A'].strip()).replace('$C_B$', item['choice_B'].strip()).replace('$C_C$', item['choice_C'].strip()).replace('$C_D$', item['choice_D'].strip()).replace('$COT$', response)
-            output = query_llm(prompt, model, tokenizer, client, temperature=0.1, max_new_tokens=128)
+            output = query_llm(prompt, model, tokenizer, client, temperature=0.1, max_new_tokens=128, debug_info=debug_info)
             if output == '':
                 continue
         response = output.strip()
