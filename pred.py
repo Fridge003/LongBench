@@ -80,7 +80,9 @@ def get_pred(data, args, fout):
         tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True)
     client = OpenAI(
         base_url=f"http://127.0.0.1:{args.port}/v1",
-        api_key=DUMMY_API_KEY
+        api_key=DUMMY_API_KEY,
+        # NOTE HACK
+        timeout=1000000,
     )
     for item in tqdm(data):
         context = item['context']
