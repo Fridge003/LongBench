@@ -23,7 +23,10 @@ def query_llm(prompt, model, tokenizer, client=None, temperature=0.5, max_new_to
     # truncate
     # max_len = maxlen_map[model]
     max_len = int(os.environ["HACK_MAX_LEN"])
-    print("hack max_len", max_len)
+
+    temperature = int(os.environ["HACK_TEMPERATURE"])
+    max_new_tokens = int(os.environ["HACK_MAX_NEW_TOKENS"])
+    print(f"hack {max_len=} {max_new_tokens=} {temperature=}")
 
     # if model in model_map:
     if True:
@@ -49,7 +52,7 @@ def query_llm(prompt, model, tokenizer, client=None, temperature=0.5, max_new_to
                 max_tokens=max_new_tokens,
                 extra_body=(
                     {"chat_template_kwargs": {"thinking": True}}
-                    if bool(int(os.environ.get("HACK_THINKING", "0")))
+                    if bool(int(os.environ["HACK_THINKING"]))
                     else None
                 ),
             )
