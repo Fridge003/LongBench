@@ -47,6 +47,11 @@ def query_llm(prompt, model, tokenizer, client=None, temperature=0.5, max_new_to
                 messages=[{"role": "user", "content": prompt}],
                 temperature=temperature,
                 max_tokens=max_new_tokens,
+                extra_body=(
+                    {"chat_template_kwargs": {"thinking": True}}
+                    if bool(int(os.environ.get("HACK_THINKING", "0")))
+                    else None
+                ),
             )
             print(f"query_llm {debug_info=} {temperature=} {max_new_tokens=} {completion=}")
             return completion.choices[0].message.content
