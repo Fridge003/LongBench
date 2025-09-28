@@ -32,6 +32,9 @@ def query_llm(prompt, model, tokenizer, client=None, temperature=0.5, max_new_to
     if True:
         input_ids = tokenizer.encode(prompt)
         if len(input_ids) > max_len:
+            if bool(int(os.environ["HACK_SKIP_TOO_LONG_PROMPT"])):
+                print(f"hack skip too long prompt {len(input_ids)=}")
+                return ''
             input_ids = input_ids[:max_len//2] + input_ids[-max_len//2:]
             prompt = tokenizer.decode(input_ids, skip_special_tokens=True)
     else:
