@@ -24,7 +24,7 @@ def query_llm(prompt, model, tokenizer, client=None, temperature=0.5, max_new_to
     # max_len = maxlen_map[model]
     max_len = int(os.environ["HACK_MAX_LEN"])
 
-    temperature = int(os.environ["HACK_TEMPERATURE"])
+    temperature = float(os.environ["HACK_TEMPERATURE"])
     max_new_tokens = int(os.environ["HACK_MAX_NEW_TOKENS"])
     print(f"hack {max_len=} {max_new_tokens=} {temperature=}")
 
